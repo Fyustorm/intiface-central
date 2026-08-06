@@ -10,7 +10,7 @@ use crate::mobile_init::MobileInitError;
 static CLASS_LOADER: OnceCell<Global<JObject<'static>>> = OnceCell::new();
 pub static JAVAVM: OnceCell<JavaVM> = OnceCell::new();
 
-pub fn create_runtime(_: StreamSink<String>) -> Result<Runtime, MobileInitError> {
+pub fn create_runtime(_: Option<StreamSink<String>>) -> Result<Runtime, MobileInitError> {
   let vm = JAVAVM.get().ok_or(MobileInitError::JavaVM)?;
   // We create runtimes multiple times. Only run our loader setup once.
   if CLASS_LOADER.get().is_none() {
