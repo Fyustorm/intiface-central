@@ -15,7 +15,7 @@ std::thread_local! {
   static JNI_ENV: RefCell<Option<AttachGuard<'static>>> = RefCell::new(None);
 }
 
-pub fn create_runtime(_: StreamSink<String>) -> Result<Runtime, MobileInitError> {
+pub fn create_runtime(_: Option<StreamSink<String>>) -> Result<Runtime, MobileInitError> {
   let vm = JAVAVM.get().ok_or(MobileInitError::JavaVM)?;
   let env = vm.attach_current_thread().unwrap();
 

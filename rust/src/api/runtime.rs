@@ -471,7 +471,7 @@ pub fn is_engine_shutdown() -> bool {
 
 pub fn run_engine(sink: StreamSink<String>, args: EngineOptionsExternal) -> Result<()> {
   let generation = LIFECYCLE.reserve_start()?;
-  let runtime = match mobile_init::create_runtime(sink.clone()) {
+    let runtime = match mobile_init::create_runtime(Some(sink.clone())) {
     Ok(runtime) => runtime,
     Err(err) => {
       LIFECYCLE.rollback_start(generation);
