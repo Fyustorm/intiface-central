@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use intiface_engine::{EngineMessage, Frontend, IntifaceError, IntifaceMessage};
+use log::trace;
 use std::sync::Arc;
 use tokio::sync::{Notify, broadcast};
 

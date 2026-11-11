@@ -83,7 +83,8 @@ pub fn run_engine(args: EngineOptionsExternal) -> Result<()> {
     })
     .map_err(|err| anyhow!("Failed to spawn engine thread: {err}"))?;
 
-  let result = wait_for_server_ready(args.websocket_port, &stop_requested);
+  let port = listen_port(&args);
+  let result = wait_for_server_ready(port, &stop_requested);
   match result {
     Ok(()) => {
       guard.running = Some(RunningEngine {
@@ -93,7 +94,7 @@ pub fn run_engine(args: EngineOptionsExternal) -> Result<()> {
       });
       info!(
         "Embedded Intiface Engine started on port {}",
-        args.websocket_port
+        port
           .map(|port| port.to_string())
           .unwrap_or_else(|| "n/a".to_owned())
       );
@@ -122,6 +123,15 @@ pub fn stop_engine() -> Result<()> {
   running.stop_requested.store(true, Ordering::Release);
   running.stop_notify.notify_waiters();
   wait_for_thread(running.thread)
+}
+
+/// The port of the engine's websocket server, from its listen address (`host:port`).
+fn listen_port(args: &EngineOptionsExternal) -> Option<u16> {
+  args
+    .websocket_listen_address
+    .as_deref()
+    .and_then(|address| address.rsplit_once(':'))
+    .and_then(|(_, port)| port.parse().ok())
 }
 
 fn wait_for_server_ready(
